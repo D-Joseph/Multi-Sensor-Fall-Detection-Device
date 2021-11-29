@@ -58,7 +58,8 @@ void loop(){
  int AM = Raw_AM * 10;  // as values are within 0 to 1, I multiplied 
                         // it by for using if else conditions 
 
- Serial.println(AM);
+ Serial.print(ax); Serial.print(" | "); Serial.print(AM);
+ Serial.println("");
  //Serial.println(PM);
  //delay(500);
  if(AM > 25){
@@ -66,9 +67,9 @@ void loop(){
     if (countdown == 0) {
       lcd.clear(); //Wipes LCD with any previous text
       lcd.setCursor(0,0); //Positions cursor on first column and row
-      lcd.print("Elderly people");
+      lcd.print("Message Sent To");
       lcd.setCursor(0,1); //Positions cursor on first column and second row
-      lcd.print("Fall too much!");
+      lcd.print("Emerg. Contacts");
       exit(0);
   } else {
       lcd.setCursor(0, 0); //Positions cursor on first column and row
