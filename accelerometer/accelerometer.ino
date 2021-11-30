@@ -1,9 +1,8 @@
 #include <Arduino_LSM6DS3.h>
-#include "mic.h"
 #include "lcd.h"
 
 int micPrev = 511;
-bool spike = false;
+int spike = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -41,9 +40,9 @@ void loop() {
 
 void readMicrophone(){ /* function readMicrophone */
  ////Test routine for Microphone
- micVal = analogRead(A0);
- if ((micPrev + 300) < micVal || (micPrev - 300) > micVal) spike = true;
+ int micVal = analogRead(A0);
+ if ((micPrev + 300) < micVal || (micPrev - 300) > micVal) spike = 200;
  Serial.print(F("Mic: ")); Serial.println((String)micVal+" "+(String)spike);
- spike = false;
+ spike = 0;
  micPrev = micVal;
 }
