@@ -29,18 +29,24 @@ void setup(){
 }
 void loop(){
   mpu_read();
-  ax = (AcX-2050)/16384.00;
-  ay = (AcY-77)/16384.00;
-  az = (AcZ-1947)/16384.00;
+
+  // Define calibration values
+  float xC;
+  
+  
+  ax = (AcX-2050)/16384.00 + .19;
+  ay = (AcY-77)/16384.00 -.01;
+  az = (AcZ-1947)/16384.00 -1.62;
 
  // Calculate the magnitude of the user's acceleration
-  int am = int(pow(pow(ax,2)+pow(ay,2)+pow(az,2),0.5))*10;
+  float rAM = pow(pow(ax,2)+pow(ay,2)+pow(az,2),0.5);
+  int am = rAM * 10;
   // Multiply the value by 10 to make it easier to read on the serial plotter
   // and to seperate it visually from the components of acceleration
-  Serial.print("ax: ") Serial.print(ax);
-  Serial.print(" | ay: ") Serial.print(ay);
-  Serial.print(" | az: ") Serial.print(az);
-  Serial.print(" | |a|: ") Serial.print(AM);
+  Serial.print("ax: "); Serial.print(ax);
+  Serial.print(" | ay: "); Serial.print(ay);
+  Serial.print(" | az: "); Serial.print(az);
+  Serial.print(" | |a|: "); Serial.print(am);
   Serial.println("");
 
   if(am > 25){
