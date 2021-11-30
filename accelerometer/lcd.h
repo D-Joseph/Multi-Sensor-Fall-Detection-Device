@@ -10,7 +10,7 @@ void lcdStartup(){
     lcd.clear();
 }
 
-void countdown(){
+void lcdCountdown(){
     // If a fall has been detected, then start the countdown sequence
     int16_t count = 9;
     do{
