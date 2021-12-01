@@ -1,91 +1,105 @@
-#include <ESP8266WiFi.h>
-#include "Gsender.h"
+#include <ArduinoSTL.h>
+#include <ESP_Mail_Client.h>
+#include <WiFiNINA.h>
 
-const char* ssid = "ssidname";                   // Your WIFI network name
-const char* password = "strongpassword";         // Your WIFI network password
-uint8_t connection_state = 0;
-uint16_t reconnect_interval = 10000;
-char temp;
-String command;
+#define STMP_HOST "smtp.gmail.com"
+#define SMTP_PORT 465
 
-uint8_t WiFiConnect(const char* nSSID = nullptr, const char* nPassword = nullptr)
-{
-  static uint16_t attempt = 0;
-  Serial.print("Connecting to ");
-  if (nSSID) {
-    WiFi.begin(nSSID, nPassword);
-    Serial.println(nSSID);
-  } else {
-    WiFi.begin(ssid, password);
+#define AUTHOR_EMAIL "msfddalerts@gmail.com"
+#define AUTHOR_PASSWORD "ECE.C.03"
+#define RECIPIENT_EMAIL "msfddalerts@gmail.com"
+
+SMTPSession smtp;
+
+void smtpCallback(SMTP_Status status);
+
+
+char ssid[] = "ARRIS-F91D";
+char pass[] = "212507734667";
+
+int status = WL_IDLE_STATUS;
+
+
+WiFiClient client;
+
+void setup() {
+
+  Serial.begin(9600);
+
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to Network named: ");
     Serial.println(ssid);
+    status = WiFi.begin(ssid, pass);
+    delay(10000);
   }
 
-  uint8_t i = 0;
-  while (WiFi.status() != WL_CONNECTED && i++ < 50)
-  {
-    delay(200);
-    Serial.print(".");
-  }
-  ++attempt;
-  Serial.println("");
-  if (i == 51) {
-    Serial.print("Connection: TIMEOUT on attempt: ");
-    Serial.println(attempt);
-    if (attempt % 2 == 0)
-      Serial.println("Check if access point available \r\n");
-    return false;
-  }
-  Serial.println("Connection: ESTABLISHED");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  return true;
-}
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
 
-void Awaits()
-{
-  uint32_t ts = millis();
-  while (!connection_state)
-  {
-    delay(50);
-    if (millis() > (ts + reconnect_interval) && !connection_state) {
-      connection_state = WiFiConnect();
-      ts = millis();
-    }
-  }
-}
+  smtp.debug(1);
 
-void setup()
-{
-  Serial.begin(115200);
-  connection_state = WiFiConnect();
-  if (!connection_state) // If it is not connected to the specify WIFI network it will constantly try to connect
-    Awaits();
+  smtp.callback(smtpCallback);
+
+  ESP_Mail_Session session;
+
+  session.server.host_name = SMTP_HOST;
+  session.server.port = SMTP_PORT;
+  session.login.email = AUTHOR_EMAIL;
+  session.login.password = AUTHOR_PASSWORD;
+  session.login.user_domain = "";
+
+  SMTP_Message message;
+
+  message.sender.name = "ESP";
+  message.sender.email = AUTHOR_EMAIL;
+  message.subject = "ESP Test Email";
+  message.addRecipient("TESTREC", RECIPIENT_EMAIL);
+
+  String htmlMsg = "<div style=\"color:#2f4468;\"><h1>MSFDD ALERT</h1><p>Your loved one has fallen.</p></div>";
+  message.html.content = htmlMsg.c_str();
+  message.html.content = htmlMsg.c_str();
+  message.text.charSet = "us-ascii";
+  message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
+
+  if (!smtp.connect(&session))
+    return;
+
+  if (!MailClient.sendMail(&smtp, &message))
+    Serial.println("Error: " + smtp.errorReason());
+
+  
 }
 
 void loop() {
-  if (Serial.available() > 0)
-  {
-    command = "";
-  }
-  while (Serial.available() > 0)
-  {
-    temp = ((byte)Serial.read());
-    command += temp;
-    delay(1);
-  }
-  if (command == "send") {
-    sendAlertMail();
-    command = "";
-  }
+  
 }
 
-void sendAlertMail() {
-  Gsender *gsender = Gsender::Instance();
-  String subject = "Sample notification message";
-  if (gsender->Subject(subject)->Send("destinationEmail@gmail.com", "Your loved one has fallen!\nPlease contact authorities and/or visit them.\nPlease dismiss this message if it was a false alarm.\n")) {
-    Serial.println("Message sent.");
-  } else {
-    Serial.print("Error sending message: ");
-    Serial.println(gsender->getError());
+
+void smtpCallback(SMTP_Status status){
+  Serial.println(status.info());
+
+  if (status.success()){
+    Serial.println("----------------");
+    ESP_MAIL_PRINTF("Message sent success: %d\n", status.completedCount());
+    ESP_MAIL_PRINTF("Message sent failled: %d\n", status.failedCount());
+    Serial.println("----------------\n");
+    struct tm dt;
+
+    for (size_t i = 0; i < smtp.sendingResult.size(); i++){
+   
+      SMTP_Result result = smtp.sendingResult.getItem(i);
+      time_t ts = (time_t)result.timestamp;
+      localtime_r(&ts, &dt);
+
+      ESP_MAIL_PRINTF("Message No: %d\n", i + 1);
+      ESP_MAIL_PRINTF("Status: %s\n", result.completed ? "success" : "failed");
+      ESP_MAIL_PRINTF("Date/Time: %d/%d/%d %d:%d:%d\n", dt.tm_year + 1900, dt.tm_mon + 1, dt.tm_mday, dt.tm_hour, dt.tm_min, dt.tm_sec);
+      ESP_MAIL_PRINTF("Recipient: %s\n", result.recipients);
+      ESP_MAIL_PRINTF("Subject: %s\n", result.subject);
+    }
+    Serial.println("----------------\n");
   }
 }
