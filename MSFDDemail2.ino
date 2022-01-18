@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
-const char* ssid = "ARRIS-F91D"; // Enter the SSID of your WiFi Network.
-const char* password = "212507734667";// Enter the Password of your WiFi Network.
-char server[] = "mail.smtp2go.com"; // The SMTP Server 
+const char* ssid = "WIFI_NAME"; // Enter the SSID of your WiFi Network.
+const char* password = "WIFI_PASSWORD";
+char server[] = "SMTPSERVER";
 
 WiFiClient espClient;
 void setup()
@@ -44,65 +44,49 @@ byte sendEmail()
   }
   if (!emailResp()) 
     return 0;
-  //
+
   Serial.println(F("Sending EHLO"));
   espClient.println("EHLO www.example.com");
   if (!emailResp()) 
     return 0;
-  //
-  /*Serial.println(F("Sending TTLS"));
-  espClient.println("STARTTLS");
-  if (!emailResp()) 
-  return 0;*/
-  //  
+
   Serial.println(F("Sending auth login"));
   espClient.println("AUTH LOGIN");
   if (!emailResp()) 
     return 0;
-  //  
+ 
   Serial.println(F("Sending User"));
-  // Change this to your base64, ASCII encoded username
-  /*
-  For example, the email address test@gmail.com would be encoded as dGVzdEBnbWFpbC5jb20=
-  */
-  espClient.println("TVNGRERBbGVydHM="); //base64, ASCII encoded Username
+  
+  espClient.println("SMTP_USERNAME");
   if (!emailResp()) 
     return 0;
-  //
   Serial.println(F("Sending Password"));
-  // change to your base64, ASCII encoded password
-  /*
-  For example, if your password is "testpassword" (excluding the quotes),
-  it would be encoded as dGVzdHBhc3N3b3Jk
-  */
-  espClient.println("YWpaalpXaHhibnBrYmpBdw==");//base64, ASCII encoded Password
+ 
+  espClient.println("SMTP_PASSWORD");//base64, ASCII encoded Password
   if (!emailResp()) 
     return 0;
-  //
+
   Serial.println(F("Sending From"));
-  // change to sender email address
-  espClient.println(F("MAIL From: MSFDDAlerts@gmail.com"));
+  espClient.println(F("MAIL From: SENDER_EMAIL"));
   if (!emailResp()) 
     return 0;
-  // change to recipient address
+
   Serial.println(F("Sending To"));
-  espClient.println(F("RCPT To: 19vg13@gmail.com"));
+  espClient.println(F("RCPT To: RECIPIENT_EMAIL"));
   if (!emailResp()) 
     return 0;
-  //
+
   Serial.println(F("Sending DATA"));
   espClient.println(F("DATA"));
   if (!emailResp()) 
     return 0;
   Serial.println(F("Sending email"));
-  // change to recipient address
-  espClient.println(F("To:  19vg13@gmail.com"));
-  // change to your address
-  espClient.println(F("From: MSFDDAlerts@gmail.com"));
-  espClient.println(F("Subject: ESP8266 test e-mail\r\n"));
-  espClient.println(F("This is is a test e-mail sent from ESP8266.\n"));
-  espClient.println(F("Second line of the test e-mail."));
-  espClient.println(F("Third line of the test e-mail."));
+
+  espClient.println(F("To:  RECIPIENT_EMAIL"));
+ 
+  espClient.println(F("From: SENDER_EMAIL"));
+  espClient.println(F("Subject: SUBJECT\r\n"));
+  espClient.println(F("TEST\r\n"));
   //
   espClient.println(F("."));
   if (!emailResp()) 
@@ -128,7 +112,7 @@ byte emailResp()
   {
     delay(1);
     loopCount++;
-    // Wait for 20 seconds and if nothing is received, stop.
+   
     if (loopCount > 20000) 
     {
       espClient.stop();
@@ -146,7 +130,7 @@ byte emailResp()
 
   if (responseCode >= '4')
   {
-    //  efail();
+  
     return 0;
   }
   return 1;
