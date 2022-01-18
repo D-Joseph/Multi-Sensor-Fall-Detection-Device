@@ -87,16 +87,16 @@ byte sendEmail()
   espClient.println(F("From: SENDER_EMAIL"));
   espClient.println(F("Subject: SUBJECT\r\n"));
   espClient.println(F("TEST\r\n"));
-  //
+  
   espClient.println(F("."));
   if (!emailResp()) 
     return 0;
-  //
+  
   Serial.println(F("Sending QUIT"));
   espClient.println(F("QUIT"));
   if (!emailResp()) 
     return 0;
-  //
+  
   espClient.stop();
   Serial.println(F("disconnected"));
   return 1;
