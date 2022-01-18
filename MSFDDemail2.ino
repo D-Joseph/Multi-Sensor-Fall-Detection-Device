@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h>
-const char* ssid = "WIFI_NAME"; // Enter the SSID of your WiFi Network.
+const char* ssid = "WIFI_NAME";
 const char* password = "WIFI_PASSWORD";
 char server[] = "SMTPSERVER";
 
@@ -62,7 +62,7 @@ byte sendEmail()
     return 0;
   Serial.println(F("Sending Password"));
  
-  espClient.println("SMTP_PASSWORD");//base64, ASCII encoded Password
+  espClient.println("SMTP_PASSWORD");
   if (!emailResp()) 
     return 0;
 
