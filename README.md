@@ -9,7 +9,7 @@ According to the CDC, over 25% of people above the age of 65 fall every year, an
 
 ## How Does it Work?
 When the device is active and attached to the user's wrist, the accelerometer begins reading the user's acceleration and compares the magnitude to a predefined threshold. If that magnitude exceeds it, then a fall is deemed to have occurred. Using this method, the device has an 80% success rate for accurately detecting falls, with a mere 3% false negative rate. After a fall is detected, the LCD's countdown sequence begins, which provides a 10s window for users to reset the device on false positives.</br>
-After the countdown sequence ends, the Arduino contacts an SMTP server whcih then sends an email to designated emergency contacts, notifying them that a fall has occurred and help is potentially needed.</br>
+After the countdown sequence ends, the Arduino contacts an SMTP server which then sends an email to designated emergency contacts, notifying them that a fall has occurred and help is potentially needed.</br>
 If the device is active, but not being worn (acceleration would read 0), the microphone's fall detection algorithm is active. With this, falls are detected as excessive differences between consecutive audio samples with a 10% false negative rate. If a fall is detected, then the LCD and SMTP process is executed in the same way as the accelerometer.
 
 ## Future Iterations
