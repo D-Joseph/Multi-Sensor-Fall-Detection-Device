@@ -2,7 +2,7 @@
 ## What is it?
 The Multi-Sensor Fall Detection Device (MSFDD) is an innovation on current fall detection alternatives on the market. It attacks three main concerns that are not addressed by the current options: the user not being able to push a button; the technology being too complicated; and the user forgetting to wear the device. The device is powered by an Arduino Uno Wifi, and reads inputs from an accelerometer and microphone.
 </br>
- ![image](https://user-images.githubusercontent.com/67702022/145734057-3c87310b-5151-4662-b973-66608a5eb3ae.png)
+ <p align="center"> <img src =https://user-images.githubusercontent.com/67702022/145734057-3c87310b-5151-4662-b973-66608a5eb3ae.png> </p>
 
 ## Why is the Problem Important?
 According to the CDC, over 25% of people above the age of 65 fall every year, and over 20% of those falls lead to serious injury. However, the problem does not stop there as less than half of seniors who experience falls notify healthcare workers of the incident. This could prove fatal in some cases, such as if blood thinners are continually used following a head injury. It is common for the fear of falling to develop for seniors. In fact, in a study conducted on 487 elderly subjects living independently, 32% of those who fell reported the development of a fear of falling.  
